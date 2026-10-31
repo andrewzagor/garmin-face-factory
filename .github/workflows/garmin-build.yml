@@ -1,0 +1,41 @@
+
+name: Garmin Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Connect IQ SDK
+        uses: DuckSoft/setup-connectiq-actions@v1
+        with:
+          sdk-version: "9.3.0"
+
+      - name: Restore Garmin developer key
+        env:
+          GARMIN_KEY_BASE64: ${{ secrets.GARMIN_DEVELOPER_KEY }}
+        run: |
+          echo "$GARMIN_KEY_BASE64" | base64 --decode > developer_key
+
+      - name: Build Venu 2 watch face
+        run: |
+          mkdir -p bin
+          monkeyc \
+            -f monkey.jungle \
+            -d venu2 \
+            -o bin/GarminFaceFactory.prg \
+            -y developer_key
