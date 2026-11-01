@@ -14,7 +14,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const MUTED = 0xBFC5CC;
     const GOLD = 0xE5A84B;
     const CYAN = 0x55D6CF;
-    const TRACK = 0x20252A;
+    const TRACK = 0x101417;
 
     function initialize() {
         WatchFace.initialize();
@@ -55,8 +55,8 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         var scale = w / 416.0;
         var outerRadius = (169 * scale).toNumber();
         var innerRadius = (153 * scale).toNumber();
-        drawTrack(dc, cx, cy, outerRadius, 7);
-        drawTrack(dc, cx, cy, innerRadius, 6);
+        drawTrack(dc, cx, cy, outerRadius, 2);
+        drawTrack(dc, cx, cy, innerRadius, 2);
 
         drawProgress(dc, cx, cy, outerRadius, 7, steps.toFloat() / stepGoal, GOLD);
         drawProgress(dc, cx, cy, innerRadius, 6, battery.toFloat() / 100.0, CYAN);
@@ -84,24 +84,26 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.drawText(cx, (149 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
+        // Give the steps value, its label, and bottom metrics separate rows.
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
         var stepText = "8,420";
-        dc.drawText(cx, (245 * h / 416), Graphics.FONT_MEDIUM,
+        dc.drawText(cx, (235 * h / 416), Graphics.FONT_MEDIUM,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (280 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText(cx, (269 * h / 416), Graphics.FONT_XTINY,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
+        // Wide two-column spacing keeps the bottom metrics off the ring edges.
         var heartText = "72";
         var batteryText = "86%";
 
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((145 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((132 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
             "HR", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((270 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((284 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
             "BAT", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((145 * w / 416), (320 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText((145 * w / 416), (325 * h / 416), Graphics.FONT_SMALL,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText((270 * w / 416), (320 * h / 416), Graphics.FONT_SMALL,
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
