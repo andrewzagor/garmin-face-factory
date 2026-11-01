@@ -1,96 +1,136 @@
 # Product Brief — Apex One
 
-**Working name:** Apex One  
-**Product type:** Premium Garmin Connect IQ watch face  
+**Product name:** Apex One  
+**Target price:** USD $4.99  
+**Product type:** Premium everyday Garmin watch face for the Connect IQ Store  
 **Primary device:** Garmin Venu 2  
 **Status:** Product definition / pre-implementation
 
 ## Product vision
 
-Create **one exceptional watch face** for the Garmin Connect IQ Store: refined enough to feel premium, effortless to read at a glance, and dependable in everyday use. Apex One should be a cohesive, distinctive product—not a collection of minor visual variations.
+Create **one exceptionally polished watch face** that combines premium visual design, fast readability, useful daily data, reliability, and battery efficiency. Apex One should feel like a complete, distinctive everyday product—not a complicated dashboard or a collection of near-identical designs.
 
-## Product goal
+**Core experience target:** Users should understand the most important information within approximately **one second** of glancing at their wrist.
 
-Deliver a production-ready watch face that excels in three areas:
+## Target user and use cases
 
-1. **Usability:** The time and most useful information are immediately readable, with clear visual hierarchy and sensible defaults.
-2. **Visual quality:** Polished typography, balanced spacing, restrained accents, and a coherent design tailored to the round AMOLED display.
-3. **Reliability:** Stable operation, efficient rendering, accurate data presentation, and successful build and device validation.
+Garmin users who want one attractive, dependable everyday watch face instead of a complicated dashboard. Apex One must feel appropriate at work, during casual activities, and in fitness contexts, without requiring the user to change faces throughout the day.
 
-## Target audience and use cases
+## Design philosophy
 
-Garmin Venu 2 owners who want a premium-looking everyday watch face that remains practical for work, exercise, and quick wrist checks. Typical checks include the time, date, daily activity, and battery level.
+- **Premium and modern:** Refined, intentional aesthetics with a recognizable identity.
+- **Clean, not empty:** Use space purposefully without sacrificing helpful information.
+- **Data-rich, not cluttered:** Surface useful daily metrics while preserving immediate comprehension.
+- **AMOLED-friendly:** Prefer true-black or otherwise power-conscious backgrounds and restrained illumination.
+- **Optimized for a round display:** Keep every label, number, and indicator within safe circular margins.
+- **Strong visual hierarchy:** Time is unmistakably dominant; secondary metrics remain easy to scan.
+- **Originality:** Do not copy existing Garmin watch faces or recognizable competitor designs. Make Apex One meaningfully different from Minimal Green V1 and Sport Pulse.
 
-## Design direction
+The default configuration must look finished, balanced, and premium immediately. Users must not need to customize it to obtain a high-quality appearance.
 
-- **Premium minimalism with purpose:** A recognizable visual identity, not an overloaded dashboard.
-- **Time first:** Make the current time the dominant element; secondary information should never compete with it.
-- **Round-screen composition:** Respect the circular safe area and avoid clipped text, especially near the lower corners.
-- **AMOLED-friendly:** Prefer a true-black foundation, deliberate contrast, and restrained use of color.
-- **Visual refinement:** Consistent alignment, typography, spacing, and deliberate information grouping.
-- **Distinctiveness:** Develop an original concept that is meaningfully different from Minimal Green V1 and Sport Pulse; color swaps alone are insufficient.
+## Core information — required
 
-The exact layout, type treatment, accent palette, and feature set should be finalized through design review before implementation.
+All of the following belong in the core product experience, with layout and hierarchy designed to avoid crowding:
 
-## Initial functional scope (proposed)
+1. **Time:** The dominant visual element.
+2. **Date and weekday:** Quickly recognizable and legible.
+3. **Battery percentage:** Clear and unobtrusive.
+4. **Steps:** Current daily count.
+5. **Heart rate:** Display reliable available heart-rate data and handle unavailable readings gracefully.
+6. **Daily steps goal progress:** Visually communicate progress without competing with the time.
 
-**Essential**
-- Clear digital time.
-- Date.
-- Battery percentage.
-- Daily step count.
+The information architecture must make the time readable first, then guide the eye naturally to the most useful daily data.
 
-**Consider after validation**
-- A restrained progress indicator for daily steps.
-- User-configurable accent or data preferences, only if compatible with the target API and worth the added complexity.
-- Thoughtful low-power / always-on behavior, where supported.
+## Optional information — evaluate later
 
-**Out of scope for the first release**
-- Feature-heavy dashboards, unnecessary animations, and experimental dependencies.
-- Multiple near-identical designs marketed as separate products.
-- Features requiring permissions or APIs not supported by the declared minimum API level.
+- Calories.
+- Floors climbed.
+- Distance.
+- Notifications.
+- Bluetooth / phone connection status.
 
-## Technical constraints
+**Inclusion rule:** Do not add optional metrics if they make the display crowded, reduce one-second readability, or weaken the premium aesthetic. Optional data is not a requirement for the initial default design.
 
-- Reuse the existing Garmin Connect IQ project structure and Monkey C implementation.
-- Target Garmin Venu 2 first; check `manifest.xml` for the current minimum API level before coding.
-- Use only supported Connect IQ APIs and reliable rendering methods.
-- Preserve existing approved designs. Implement Apex One in its own dedicated design branch when development is authorized.
-- Never modify `main` directly.
-- Do not modify `.github/workflows/garmin-build.yml` unless explicitly requested.
-- Treat `GARMIN_FACTORY.md` as the standing agent guidance.
+## Customization goals
 
-## Quality and acceptance criteria
+- Multiple carefully designed premium color themes.
+- 12-hour and 24-hour time support.
+- Configurable data fields where technically practical.
+- Ability to hide secondary information.
+- Maintain strong layout, spacing, contrast, and visual balance under every supported configuration.
 
-Apex One is ready for release consideration only when:
+Customization must enhance the product without becoming necessary to make the default design attractive. Prioritize a smaller set of well-executed options over excessive settings. Validate feasibility against the target device and supported Connect IQ APIs.
 
-- Time and primary information are readable at a glance under typical conditions.
-- Text and indicators stay within safe margins on the round Venu 2 display.
-- The layout remains visually balanced with realistic data values (including large step counts).
-- Battery and activity values render correctly; missing data is handled gracefully.
-- Rendering is responsive and avoids unnecessary battery use.
-- Garmin Build CI passes on the Apex One implementation branch.
-- The face is inspected in the Venu 2 simulator and tested on a physical device when available.
-- Store assets, product description, and Connect IQ submission requirements are reviewed before publication.
+## Quality and reliability requirements
 
-## Delivery approach
+- **Excellent readability:** Critical information understandable at a glance, including in typical indoor and outdoor use.
+- **No clipping:** All text, metrics, and indicators remain within the circular Venu 2 display, including with large values and alternate settings.
+- **Stable Monkey C implementation:** Simple, maintainable code using supported APIs.
+- **Efficient rendering:** Avoid unnecessary redraws, allocations, and expensive computations.
+- **Battery-conscious design:** Optimize update behavior, graphics, and active/low-power states.
+- **Reliable data handling:** Correct display of time, steps, goal progress, heart rate, and battery information.
+- **Graceful degradation:** Unavailable or stale sensor/activity data must never crash the watch face or display misleading values.
+- **Always-On Display (AOD):** Treat AOD as a product requirement to evaluate and implement where supported; design a readable, low-power presentation and validate device-specific constraints.
+- **Build gate:** Garmin Build CI must pass before release or merge.
+- **Validation:** Review in the Venu 2 simulator, test edge cases and customization combinations, and perform real-device testing before publication when hardware is available.
 
-1. **Define:** Confirm essential data, visual concept, and measurable acceptance criteria.
-2. **Design:** Review a distinctive layout and round-screen safe areas.
-3. **Implement:** Build in a new dedicated Apex One design branch; commit all required files.
-4. **Validate:** Run Garmin CI; fix failures in the same branch. Test simulator scenarios and device behavior.
-5. **Polish:** Address readability, visual consistency, performance, and edge cases.
-6. **Prepare for store:** Finalize screenshots, listing text, compatibility details, and release checklist.
+## Commercial positioning
 
-## Open product decisions
+**Target price: $4.99.** Apex One should justify its price through visual polish, usefulness, customization, and dependable daily operation—not through excessive features.
 
-- Final layout and visual identity.
-- Whether to include a steps progress indicator.
-- Whether user settings belong in v1.
-- Supported languages and date/time formatting.
-- Commercial model and store positioning.
-- Physical-device testing availability.
+The Connect IQ Store listing must communicate premium quality immediately. Prepare compelling, truthful screenshots showing the best default configuration, strong time readability, clean metric presentation, and selected premium themes if implemented. Review current Connect IQ Store commercial, publishing, and asset requirements before committing to a sales or distribution mechanism.
+
+## Scope and constraints
+
+- **One flagship product first:** Create the strongest possible default Apex One design for Garmin Venu 2.
+- **No mass production yet:** Do not create batches of watch faces or superficial variants.
+- Use the existing Connect IQ project structure; check `manifest.xml` for the current minimum API level before implementation.
+- Preserve previously approved watch faces and use a dedicated Apex One implementation branch.
+- Never commit directly to `main`.
+- Do not modify `.github/workflows/garmin-build.yml` without explicit authorization.
+- Follow `GARMIN_FACTORY.md` and keep changes scoped to the requested task.
+
+## Development strategy
+
+Proceed iteratively, with explicit quality gates:
+
+1. **Concept:** Establish a distinctive premium visual concept and an excellent default layout.
+2. **Implementation:** Build only the approved Apex One design in its own branch.
+3. **Garmin CI:** Compile for Venu 2; investigate and fix errors on the same branch until the build passes.
+4. **Simulator review:** Inspect readability, circular margins, representative data, and settings combinations.
+5. **Visual refinement:** Improve typography, spacing, hierarchy, colors, and micro-details.
+6. **Battery / performance optimization:** Validate update efficiency and AOD behavior where supported.
+7. **Real-device testing:** Assess actual visibility, responsiveness, stability, and battery impact.
+8. **Store preparation:** Finalize screenshots, listing, compatibility, and release readiness.
+
+**Sequence:** concept → implementation → Garmin CI → simulator review → visual refinement → battery/performance optimization → real-device testing → store preparation.
+
+## Release acceptance criteria
+
+Apex One is ready for commercial release consideration when:
+
+- Its default appearance is distinctive, complete, and convincingly premium.
+- Time and critical daily information are understandable within approximately one second.
+- All required core metrics are implemented or any device/API limitation is explicitly resolved.
+- No clipping occurs on Venu 2, including extreme values and supported configurations.
+- All customization combinations remain legible and visually coherent.
+- Missing data and low-power states are handled reliably.
+- Garmin Build CI passes and simulator checks are completed.
+- Battery/performance behavior and AOD requirements are validated.
+- Real-device testing is completed, or any remaining limitation is documented before release decision.
+- Store screenshots and listing accurately represent the product and communicate its $4.99 value.
+
+## Open decisions for design review
+
+- Final Apex One visual concept, typography, and premium theme palette.
+- Exact arrangement of heart rate, steps, goal progress, battery, and date/weekday.
+- Heart-rate refresh and unavailable-data behavior.
+- Step-goal source and progress visualization.
+- AOD support and device-specific rendering strategy.
+- Initial customization scope and configuration UI.
+- Localization and 12/24-hour defaults.
+- Connect IQ Store pricing/distribution feasibility and release assets.
 
 ---
 
-**Document purpose:** This is a product brief only. It does not authorize source-code changes or a release.
+**Document purpose:** This product brief defines requirements and commercial intent only. It does not authorize source-code changes or a release.
