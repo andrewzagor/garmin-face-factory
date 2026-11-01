@@ -29,7 +29,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.clear();
 
         // Athletic header and short orange speed stripe.
-        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(0x00FFFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, height * 12 / 100, Graphics.FONT_SMALL,
             "SPORT PULSE", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
@@ -48,7 +48,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
 
         // Wide step counter forms the main sport-focused panel.
         var steps = ActivityMonitor.getInfo().steps;
-        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(0x00FFFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, height * 49 / 100, Graphics.FONT_SMALL,
             "TODAY'S STEPS", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
@@ -68,7 +68,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         var battery = System.getSystemStats().battery.toNumber();
 
         // Compact, safely inset footer for the circular screen.
-        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(0x00FFFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width * 35 / 100, height * 79 / 100, Graphics.FONT_SMALL,
             "DATE", Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText(width * 65 / 100, height * 79 / 100, Graphics.FONT_SMALL,
