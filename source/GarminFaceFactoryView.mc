@@ -52,7 +52,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         var battery = System.getSystemStats().battery.toNumber();
         var steps = ActivityMonitor.getInfo().steps;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 4, height * 73 / 100, Graphics.FONT_SMALL,
+        dc.drawText(width * 30 / 100, height * 73 / 100, Graphics.FONT_SMALL,
             "BATTERY", Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText(width * 3 / 4, height * 73 / 100, Graphics.FONT_SMALL,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
