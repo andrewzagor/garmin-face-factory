@@ -4,7 +4,8 @@
 **Target price:** USD $4.99  
 **Product type:** Premium everyday Garmin watch face for the Connect IQ Store  
 **Primary device:** Garmin Venu 2  
-**Status:** Product definition / pre-implementation
+**Selected design direction:** Concept 2 — Apex One / Orbit (with Precision information hierarchy)  
+**Status:** Design direction selected / pre-implementation
 
 ## Product vision
 
@@ -26,7 +27,50 @@ Garmin users who want one attractive, dependable everyday watch face instead of 
 - **Strong visual hierarchy:** Time is unmistakably dominant; secondary metrics remain easy to scan.
 - **Originality:** Do not copy existing Garmin watch faces or recognizable competitor designs. Make Apex One meaningfully different from Minimal Green V1 and Sport Pulse.
 
+**Selected direction:** Orbit's circular progress-ring identity, combined with Concept 1 / Precision's clean, restrained information hierarchy. The time remains the primary focal point, and rings must never reduce the readability of essential numbers. **Do not render the product name “APEX ONE” anywhere on the actual watch-face display**; the name belongs in store listings and product materials only. Reclaim the display space for meaningful information and breathing room.
+
 The default configuration must look finished, balanced, and premium immediately. Users must not need to customize it to obtain a high-quality appearance.
+
+## Selected visual concept — Orbit × Precision
+
+**Decision:** Adopt **Concept 2 / Orbit** as the sole Apex One product direction. Borrow **Concept 1 / Precision**'s disciplined alignment, spacing, typography, and one-second readability. This is one coherent flagship design, not two separate watch faces.
+
+### Layout and information hierarchy
+
+- Use a round, AMOLED-friendly composition with a prominent, large digital time in the center.
+- Place the weekday and date in a compact, legible position above or near the time.
+- Arrange steps, heart rate, and battery as clearly labeled secondary readouts within the inner safe area; avoid crowding the clock or the circular edge.
+- Display daily step-goal progress as the **primary functional outer ring**, with a clearly distinguishable completed segment and track.
+- Any additional concentric ring must have its **own explicit, useful, current metric** and a clear visual interpretation. Do not introduce a second ring simply for symmetry.
+- Favor a small number of well-spaced data groups over dense micro-labels. Preserve the hierarchy: **time → goal progress / steps → heart rate → date / battery**, with exact positioning subject to simulator review.
+- Respect the Venu 2 circular safe area at all times, including long values and 12/24-hour formats.
+
+### Functional ring rules
+
+- **No decorative progress rings.** Every visible progress ring must represent a meaningful metric sourced from actual available device data.
+- The default outer ring represents **daily steps completed relative to the user's daily steps goal**; the arc and accompanying numeric readout must agree.
+- Ring progress should update when underlying data changes, not animate continuously or redraw unnecessarily.
+- Define behavior for zero/unknown goals, missing activity data, and progress exceeding 100%; never imply valid progress when the data is unavailable.
+- If another ring is proposed, first specify its data source, denominator/target, user value, refresh behavior, and fallback. A heart-rate value alone must not be depicted as an arbitrary percentage of an invented target.
+- Keep ring strokes and gaps legible but restrained; arcs must not crowd the clock or touch the screen edge.
+- Evaluate simplified rings or removal of nonessential indicators for low-power / Always-On Display operation, subject to device support.
+
+### Visual signature and palette
+
+- **Signature:** A precise, purposeful circular progress ring integrated with a calm, high-contrast digital dashboard.
+- **Default palette direction:** Obsidian black, warm white, restrained champagne-gold for step-goal progress, and muted cool accents for secondary information.
+- Apply Precision's clean typography, balanced negative space, and minimal separators rather than adding decorative ornamentation.
+- The face must **not display “APEX ONE,” a logo, or redundant branding**. Product identity is communicated by the ring geometry, proportions, typography, and premium themes.
+- Optional themes may change coordinated colors without altering data meaning or reducing contrast.
+- Ensure the default arrangement is complete and visually premium before adding customization.
+
+### Design review checkpoints
+
+- Verify the one-second time-reading goal and immediate comprehension of the progress ring.
+- Confirm every ring has a truthful, understandable live-data meaning.
+- Check circular-edge clipping, large step values, unavailable heart-rate readings, and different time formats.
+- Evaluate contrast, visual balance, simulator rendering quality, and battery-conscious update strategy.
+- Do not begin Monkey C implementation until the selected layout is reviewed and implementation is explicitly requested.
 
 ## Core information — required
 
@@ -122,10 +166,10 @@ Apex One is ready for commercial release consideration when:
 
 ## Open decisions for design review
 
-- Final Apex One visual concept, typography, and premium theme palette.
+- Detailed Orbit × Precision layout geometry, typography, and final premium theme palette (overall direction selected).
 - Exact arrangement of heart rate, steps, goal progress, battery, and date/weekday.
 - Heart-rate refresh and unavailable-data behavior.
-- Step-goal source and progress visualization.
+- Step-goal source, ring scaling for values above goal, and missing-data behavior.
 - AOD support and device-specific rendering strategy.
 - Initial customization scope and configuration UI.
 - Localization and 12/24-hour defaults.
