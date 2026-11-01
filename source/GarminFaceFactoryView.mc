@@ -6,7 +6,8 @@ import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 
-// Apex One / Orbit: one carefully composed, data-driven Venu 2 watch face.
+// Apex One / Orbit: static visual foundation for Venu 2.
+// Demo values only; live activity/sensor data comes in a later phase.
 class GarminFaceFactoryView extends WatchUi.WatchFace {
     const BLACK = 0x000000;
     const WHITE = 0xF4F1E8;
@@ -14,8 +15,6 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const GOLD = 0xE5A84B;
     const CYAN = 0x55D6CF;
     const TRACK = 0x20252A;
-
-    var _lowPower = false;
 
     function initialize() {
         WatchFace.initialize();
@@ -39,48 +38,17 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
 
         var clock = System.getClockTime();
         var hour = clock.hour;
-        var is24Hour = true;
-        var settings = System.getDeviceSettings();
-        if (settings != null) {
-            is24Hour = settings.is24Hour;
-        }
-        if (!is24Hour) {
-            hour = hour % 12;
-            if (hour == 0) {
-                hour = 12;
-            }
-        }
         var timeText = Lang.format("$1$:$2$", [
             hour.format("%02d"),
             clock.min.format("%02d")
         ]);
 
-        // Low-power presentation intentionally uses fewer illuminated pixels.
-        if (_lowPower) {
-            dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, cy - 32, Graphics.FONT_NUMBER_MEDIUM,
-                timeText, Graphics.TEXT_JUSTIFY_CENTER);
-            return;
-        }
-
-        var activity = ActivityMonitor.getInfo();
-        var steps = null;
-        var goal = null;
-        var heart = null;
-        if (activity != null) {
-            steps = activity.steps;
-            goal = activity.stepGoal;
-            heart = activity.currentHeartRate;
-        }
-
-        var battery = null;
-        var stats = System.getSystemStats();
-        if (stats != null && stats.battery != null) {
-            battery = stats.battery.toNumber();
-            if (battery < 0 || battery > 100) {
-                battery = null;
-            }
-        }
+        // Fixed demo data: 8,420 of a 10,000-step sample goal, 86% battery.
+        // Ring percentages are derived from these displayed sample values.
+        var steps = 8420;
+        var stepGoal = 10000;
+        var battery = 86;
+        var heart = 72;
 
         // The outer ring is steps / goal; the inner ring is battery / 100.
         // No arbitrary or decorative percentages.
@@ -90,12 +58,8 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         drawTrack(dc, cx, cy, outerRadius, 7);
         drawTrack(dc, cx, cy, innerRadius, 6);
 
-        if (steps != null && goal != null && steps >= 0 && goal > 0) {
-            drawProgress(dc, cx, cy, outerRadius, 7, steps.toFloat() / goal, GOLD);
-        }
-        if (battery != null) {
-            drawProgress(dc, cx, cy, innerRadius, 6, battery.toFloat() / 100.0, CYAN);
-        }
+        drawProgress(dc, cx, cy, outerRadius, 7, steps.toFloat() / stepGoal, GOLD);
+        drawProgress(dc, cx, cy, innerRadius, 6, battery.toFloat() / 100.0, CYAN);
 
         var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -121,30 +85,21 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
-        var stepText = "--";
-        if (steps != null && steps >= 0) {
-            stepText = groupedNumber(steps);
-        }
+        var stepText = "8,420";
         dc.drawText(cx, (245 * h / 416), Graphics.FONT_MEDIUM,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (280 * h / 416), Graphics.FONT_XTINY,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
-        var heartText = "--";
-        if (heart != null && heart > 0) {
-            heartText = heart.toString();
-        }
-        var batteryText = "--";
-        if (battery != null) {
-            batteryText = battery.toString() + "%";
-        }
+        var heartText = "72";
+        var batteryText = "86%";
 
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
         dc.drawText((145 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
             "HR", Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText((270 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
-            "POWER", Graphics.TEXT_JUSTIFY_CENTER);
+            "BAT", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText((145 * w / 416), (320 * h / 416), Graphics.FONT_SMALL,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
@@ -174,28 +129,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.drawCircle(cx, cy, radius);
     }
 
-    function groupedNumber(value) {
-        var digits = value.toString();
-        var result = "";
-        var count = 0;
-        for (var i = digits.length() - 1; i >= 0; i--) {
-            if (count > 0 && count % 3 == 0) {
-                result = "," + result;
-            }
-            result = digits.substring(i, i + 1) + result;
-            count += 1;
-        }
-        return result;
-    }
-
     function onHide() {
     }
 
-    function onEnterSleep() {
-        _lowPower = true;
-    }
-
-    function onExitSleep() {
-        _lowPower = false;
-    }
 }
