@@ -29,6 +29,15 @@ This document provides standing guidance for AI agents working in this repositor
 - The Garmin Build CI workflow must pass before a design is merged.
 - If CI fails, analyze the build error and fix it on the same design branch, then rerun CI.
 
+## Multi-design rules
+- Keep multiple watch faces as separate, distinct designs.
+- Never overwrite an existing approved design when creating another.
+- Give every design a unique name and its own branch.
+- Ensure each design can be reviewed independently.
+- Generate designs one at a time unless the user explicitly requests a batch.
+- Preserve all previously approved designs.
+- Prefer shared, reusable code only when it does not constrain visual diversity.
+
 ## Project scope
 - Build and maintain Garmin watch faces using Garmin Connect IQ and Monkey C.
 - The current project targets Garmin Venu 2. Check `manifest.xml` for the actual device targets and minimum Connect IQ API level before implementing changes.
