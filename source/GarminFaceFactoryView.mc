@@ -6,6 +6,7 @@ import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 
+// Sport Pulse: a training-dashboard layout with cyan and orange accents.
 class GarminFaceFactoryView extends WatchUi.WatchFace {
 
     function initialize() {
@@ -13,7 +14,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     }
 
     function onLayout(dc as Dc) as Void {
-        // The minimalist face is drawn directly in onUpdate.
+        // Draw directly to keep the design independent of XML layout labels.
     }
 
     function onShow() as Void {
@@ -24,44 +25,59 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         var height = dc.getHeight();
         var centerX = width / 2;
 
-        // Black AMOLED background.
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
 
-        // Current time in large white digits.
+        // Athletic header and short orange speed stripe.
+        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, height * 12 / 100, Graphics.FONT_SMALL,
+            "SPORT PULSE", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(width * 35 / 100, height * 22 / 100,
+            width * 30 / 100, 3);
+
+        // Large central time is the primary readout.
         var clock = System.getClockTime();
         var timeText = Lang.format("$1$:$2$", [
             clock.hour.format("%02d"),
             clock.min.format("%02d")
         ]);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, height * 32 / 100, Graphics.FONT_NUMBER_MEDIUM,
+        dc.drawText(centerX, height * 27 / 100, Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Date beneath the time (day/month).
+        // Wide step counter forms the main sport-focused panel.
+        var steps = ActivityMonitor.getInfo().steps;
+        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, height * 49 / 100, Graphics.FONT_SMALL,
+            "TODAY'S STEPS", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, height * 56 / 100, Graphics.FONT_NUMBER_MEDIUM,
+            steps.toString(), Graphics.TEXT_JUSTIFY_CENTER);
+
+        // A horizontal divider separates performance and status data.
+        dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(width * 26 / 100, height * 75 / 100,
+            width * 48 / 100, 2);
+
         var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var dateText = Lang.format("$1$/$2$", [
             today.day.format("%02d"),
             today.month.format("%02d")
         ]);
-        dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, height * 53 / 100, Graphics.FONT_MEDIUM,
-            dateText, Graphics.TEXT_JUSTIFY_CENTER);
-
-        // Battery percentage and daily steps.
         var battery = System.getSystemStats().battery.toNumber();
-        var steps = ActivityMonitor.getInfo().steps;
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width * 30 / 100, height * 73 / 100, Graphics.FONT_SMALL,
-            "BATTERY", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(width * 3 / 4, height * 73 / 100, Graphics.FONT_SMALL,
-            "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(width / 4, height * 81 / 100, Graphics.FONT_MEDIUM,
+        // Compact, safely inset footer for the circular screen.
+        dc.setColor(Graphics.COLOR_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(width * 35 / 100, height * 79 / 100, Graphics.FONT_SMALL,
+            "DATE", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(width * 65 / 100, height * 79 / 100, Graphics.FONT_SMALL,
+            "BAT", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(width * 35 / 100, height * 86 / 100, Graphics.FONT_SMALL,
+            dateText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(width * 65 / 100, height * 86 / 100, Graphics.FONT_SMALL,
             battery.toString() + "%", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(width * 3 / 4, height * 81 / 100, Graphics.FONT_MEDIUM,
-            steps.toString(), Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     function onHide() as Void {
