@@ -2,6 +2,16 @@
 
 This document provides standing guidance for AI agents working in this repository. Follow the user's explicit instructions first; when requirements are unclear, ask before making potentially disruptive changes.
 
+## Core rules
+- **Primary target device:** Garmin Venu 2.
+- **Project structure:** Use the existing Connect IQ project structure.
+- **Branch protection:** Never modify `main` directly.
+- **Design isolation:** Every new watch face must be developed in a separate branch.
+- **CI workflow protection:** Never modify `.github/workflows/garmin-build.yml` unless explicitly requested.
+- **Build requirement:** Every design must compile successfully with Garmin CI before being considered complete. If CI has not run or fails, report that clearly; never claim success without evidence.
+- **Implementation:** Prefer simple and reliable Monkey C implementations.
+- **API compatibility:** Use only APIs supported by the project's current Connect IQ API level, as declared in `manifest.xml`.
+
 ## Project scope
 - Build and maintain Garmin watch faces using Garmin Connect IQ and Monkey C.
 - The current project targets Garmin Venu 2. Check `manifest.xml` for the actual device targets and minimum Connect IQ API level before implementing changes.
