@@ -12,6 +12,14 @@ This document provides standing guidance for AI agents working in this repositor
 - **Implementation:** Prefer simple and reliable Monkey C implementations.
 - **API compatibility:** Use only APIs supported by the project's current Connect IQ API level, as declared in `manifest.xml`.
 
+## Design rules
+- Each generated watch face must have a distinct visual concept.
+- Vary layout, typography, information hierarchy, and accent colors across designs.
+- Do not create duplicate designs by changing only colors.
+- Optimize every layout for the round Garmin Venu 2 display.
+- Keep important content away from the circular screen edges to prevent clipping.
+- Prioritize readability and AMOLED-friendly backgrounds.
+
 ## Project scope
 - Build and maintain Garmin watch faces using Garmin Connect IQ and Monkey C.
 - The current project targets Garmin Venu 2. Check `manifest.xml` for the actual device targets and minimum Connect IQ API level before implementing changes.
