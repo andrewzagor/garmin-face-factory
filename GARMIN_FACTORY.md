@@ -20,6 +20,15 @@ This document provides standing guidance for AI agents working in this repositor
 - Keep important content away from the circular screen edges to prevent clipping.
 - Prioritize readability and AMOLED-friendly backgrounds.
 
+## Workflow rules
+- Read `GARMIN_FACTORY.md` before making any changes.
+- Create a descriptive, dedicated branch for every new watch face design.
+- Never commit a new design directly to `main`.
+- Keep changes limited to the requested watch face and its required files.
+- After implementation, commit all files required for that design to its branch.
+- The Garmin Build CI workflow must pass before a design is merged.
+- If CI fails, analyze the build error and fix it on the same design branch, then rerun CI.
+
 ## Project scope
 - Build and maintain Garmin watch faces using Garmin Connect IQ and Monkey C.
 - The current project targets Garmin Venu 2. Check `manifest.xml` for the actual device targets and minimum Connect IQ API level before implementing changes.
