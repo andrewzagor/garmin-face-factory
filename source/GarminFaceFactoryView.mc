@@ -1,4 +1,5 @@
 import Toybox.ActivityMonitor;
+import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
@@ -14,6 +15,11 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const GOLD = 0xE5A84B;
     const CYAN = 0x55D6CF;
     const TRACK = 0x101417;
+    // Active-display theme palettes; the approved AOD colors stay fixed.
+    const TITANIUM_SILVER = 0xD4DCE5;
+    const TITANIUM_ICE = 0x89DDF2;
+    const ELECTRIC_BLUE = 0x378BFF;
+    const ELECTRIC_VIOLET = 0xBB82FF;
     const AOD_TEXT = 0x777B7D;
     const AOD_GOLD = 0x4D3920;
     const AOD_CYAN = 0x1B4442;
@@ -52,6 +58,19 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         if (_lowPower) {
             drawAlwaysOn(dc, cx, cy, timeText, clock.min);
             return;
+        }
+
+        // Only the normal display uses the selected Connect IQ app theme.
+        // Missing or invalid settings fall back to Orbit Gold.
+        var stepAccent = GOLD;
+        var batteryAccent = CYAN;
+        var selectedTheme = Application.Properties.getValue("ColorTheme");
+        if (selectedTheme == 1) {
+            stepAccent = TITANIUM_SILVER;
+            batteryAccent = TITANIUM_ICE;
+        } else if (selectedTheme == 2) {
+            stepAccent = ELECTRIC_BLUE;
+            batteryAccent = ELECTRIC_VIOLET;
         }
 
         // Read current daily activity and the user's actual step goal.
@@ -100,11 +119,11 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
 
         if (steps != null && steps >= 0 && stepGoal != null && stepGoal > 0) {
             drawProgress(dc, cx, cy, outerRadius, 7,
-                steps.toFloat() / stepGoal.toFloat(), GOLD);
+                steps.toFloat() / stepGoal.toFloat(), stepAccent);
         }
         if (battery != null) {
             drawProgress(dc, cx, cy, innerRadius, 6,
-                battery.toFloat() / 100.0, CYAN);
+                battery.toFloat() / 100.0, batteryAccent);
         }
 
         var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
@@ -131,7 +150,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
         // Give the steps value, its label, and bottom metrics separate rows.
-        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(stepAccent, Graphics.COLOR_TRANSPARENT);
         var stepText = "--";
         if (steps != null && steps >= 0) {
             stepText = formatSteps(steps);
