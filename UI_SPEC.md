@@ -223,3 +223,17 @@ The first implementation must focus on **one excellent default configuration**. 
 - **Two rings vs. minimalist hierarchy:** Both rings must remain truthful and visually subordinate to the time; if simulator testing reveals crowding, adjust stroke widths, spacing, and geometry before adding any new UI elements.
 
 **Freeze boundary:** This document defines the approved UI baseline. Implementation must occur only after explicit authorization, in a separate dedicated design branch. Any material departure from these decisions requires a documented spec revision before implementation. No Monkey C code, resources, manifest, workflow, or `GARMIN_FACTORY.md` changes are authorized by this step.
+
+## 16. Approved AOD implementation baseline — 2026-11-02
+
+**AOD VISUALLY APPROVED AND FROZEN.** The user approved the current Always-On Display appearance in the Venu 2 simulator. Section 11 remains the general design rationale; the *implemented and visually approved* AOD on `product/apex-one-v1` is now the controlling baseline. Do not alter its layout, colors, fonts, geometry, update behavior, or low-power content unless explicitly requested by the user.
+
+The approved implementation in `source/GarminFaceFactoryView.mc` is characterized by:
+
+- True-black background (`#000000`), with no active-mode metrics, date, or full progress rings in low-power mode.
+- Centered time in `Graphics.FONT_MEDIUM`, subdued gray `#777B7D`, positioned at `(cx + dx, cy - 13 + dy)` with center justification.
+- Two short, one-pixel Orbit fingerprint arcs at radius 95: muted gold `#4D3920` with clockwise angles 96 to 84, and muted cyan `#1B4442` with clockwise angles 276 to 264. These are identity accents, not progress indicators.
+- A minute-driven 5×5 offset cycle: `phase = minute % 25`, `dx = (phase % 5) - 2`, `dy = (phase / 5).toNumber() - 2`. The clock and arcs shift together.
+- Low-power entry/exit through `onEnterSleep` and `onExitSleep`, with `WatchUi.requestUpdate()`; the platform controls low-power update cadence.
+
+**Change control:** Preserve this approved AOD exactly in future implementation tasks, even if normal-mode design, metrics, or settings change. Only an explicit AOD change request permits revising it. Visual approval does not imply physical-device burn-in, battery, or release validation. This documentation update does not authorize source-code changes.
