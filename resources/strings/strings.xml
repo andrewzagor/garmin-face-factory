@@ -1,3 +1,7 @@
 <strings>
     <string id="AppName">GarminFaceFactory</string>
+    <string id="ColorTheme">Color Theme</string>
+    <string id="ThemeOrbitGold">Orbit Gold</string>
+    <string id="ThemeTitanium">Titanium</string>
+    <string id="ThemeElectric">Electric</string>
 </strings>
