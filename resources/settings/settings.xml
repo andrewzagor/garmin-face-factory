@@ -1,0 +1,9 @@
+<settings>
+    <setting propertyKey="@Properties.ColorTheme" title="@Strings.ColorTheme">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.ThemeOrbitGold</listEntry>
+            <listEntry value="1">@Strings.ThemeTitanium</listEntry>
+            <listEntry value="2">@Strings.ThemeElectric</listEntry>
+        </settingConfig>
+    </setting>
+</settings>
