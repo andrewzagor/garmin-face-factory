@@ -15,6 +15,8 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const CYAN = 0x55D6CF;
     const TRACK = 0x101417;
     const AOD_TEXT = 0x777B7D;
+    const AOD_GOLD = 0x4D3920;
+    const AOD_CYAN = 0x1B4442;
 
     var _lowPower = false;
 
@@ -162,7 +164,8 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
-    // Small, gray clock on true black. A 5x5 offset cycle shifts the glyphs
+    // Small, gray clock and two restrained Orbit markers on true black.
+    // A 5x5 offset cycle shifts the glyphs
     // by up to four pixels every minute to reduce persistent pixel wear.
     // The platform owns the low-power once-per-minute refresh cadence.
     function drawAlwaysOn(dc, cx, cy, timeText, minute) {
@@ -172,6 +175,14 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setColor(AOD_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx + dx, cy - 13 + dy, Graphics.FONT_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
+
+        // Orbit fingerprint: two very short, one-pixel arcs, not progress
+        // indicators. Move with the clock's burn-in mitigation offset.
+        dc.setPenWidth(1);
+        dc.setColor(AOD_GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.drawArc(cx + dx, cy + dy, 95, Graphics.ARC_CLOCKWISE, 96, 84);
+        dc.setColor(AOD_CYAN, Graphics.COLOR_TRANSPARENT);
+        dc.drawArc(cx + dx, cy + dy, 95, Graphics.ARC_CLOCKWISE, 276, 264);
     }
 
     function onEnterSleep() {
