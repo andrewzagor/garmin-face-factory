@@ -14,6 +14,9 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const GOLD = 0xE5A84B;
     const CYAN = 0x55D6CF;
     const TRACK = 0x101417;
+    const AOD_TEXT = 0x777B7D;
+
+    var _lowPower = false;
 
     function initialize() {
         WatchFace.initialize();
@@ -41,6 +44,13 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             hour.format("%02d"),
             clock.min.format("%02d")
         ]);
+
+        // AMOLED AOD: only a small, subdued time readout. No rings or
+        // metrics; skip all sensor reads and active-mode drawing.
+        if (_lowPower) {
+            drawAlwaysOn(dc, cx, cy, timeText, clock.min);
+            return;
+        }
 
         // Read current daily activity and the user's actual step goal.
         // All activity fields are nullable on supported Garmin devices.
@@ -150,6 +160,28 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.drawText((270 * w / 416), (320 * h / 416), Graphics.FONT_SMALL,
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
+    }
+
+    // Small, gray clock on true black. A 5x5 offset cycle shifts the glyphs
+    // by up to four pixels every minute to reduce persistent pixel wear.
+    // The platform owns the low-power once-per-minute refresh cadence.
+    function drawAlwaysOn(dc, cx, cy, timeText, minute) {
+        var phase = minute % 25;
+        var dx = (phase % 5) - 2;
+        var dy = (phase / 5).toNumber() - 2;
+        dc.setColor(AOD_TEXT, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx + dx, cy - 13 + dy, Graphics.FONT_MEDIUM,
+            timeText, Graphics.TEXT_JUSTIFY_CENTER);
+    }
+
+    function onEnterSleep() {
+        _lowPower = true;
+        WatchUi.requestUpdate();
+    }
+
+    function onExitSleep() {
+        _lowPower = false;
+        WatchUi.requestUpdate();
     }
 
     // Draw only actual progress; native arcs avoid bitmap memory overhead.
