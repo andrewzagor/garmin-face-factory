@@ -149,16 +149,17 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.drawText(cx, (149 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Compact, distinct rows: allow five-digit steps and generous label gaps.
+        // Compact lower typography: keep 40,000 and both metric columns inside
+        // the inner ring, with distinct steps, label, and metric rows.
         dc.setColor(stepAccent, Graphics.COLOR_TRANSPARENT);
         var stepText = "--";
         if (steps != null && steps >= 0) {
             stepText = formatSteps(steps);
         }
-        dc.drawText(cx, (224 * h / 416), Graphics.FONT_MEDIUM,
+        dc.drawText(cx, (224 * h / 416), Graphics.FONT_SMALL,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (264 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText(cx, (257 * h / 416), Graphics.FONT_TINY,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
         // Bottom values sit higher and nearer the center, inside the inner ring.
@@ -173,14 +174,14 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         }
 
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), (290 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((155 * w / 416), (283 * h / 416), Graphics.FONT_TINY,
             "HR", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), (290 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((261 * w / 416), (283 * h / 416), Graphics.FONT_TINY,
             "BAT", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), (310 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText((155 * w / 416), (304 * h / 416), Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), (310 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText((261 * w / 416), (304 * h / 416), Graphics.FONT_TINY,
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
