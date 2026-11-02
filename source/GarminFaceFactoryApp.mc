@@ -16,6 +16,12 @@ class GarminFaceFactoryApp extends Application.AppBase {
     function onStop(state as Dictionary?) as Void {
     }
 
+    // Refresh active watch-face accents when Connect IQ app settings change.
+    // The approved low-power rendering is not modified.
+    function onSettingsChanged() as Void {
+        WatchUi.requestUpdate();
+    }
+
     // Return the initial view of your application here
     function getInitialView() as [Views] or [Views, InputDelegates] {
         return [ new GarminFaceFactoryView() ];
