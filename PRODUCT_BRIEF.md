@@ -178,3 +178,11 @@ Apex One is ready for commercial release consideration when:
 ---
 
 **Document purpose:** This product brief defines requirements and commercial intent only. It does not authorize source-code changes or a release.
+
+## Approved Always-On Display baseline — 2026-11-02
+
+**Status: VISUALLY APPROVED / FROZEN.** The current Apex One / Orbit Always-On Display implementation on `product/apex-one-v1` has been reviewed and visually approved in the Venu 2 simulator. Preserve its appearance and behavior unchanged unless the user explicitly requests an AOD change. This approval applies to the AOD visual design; it does not by itself certify physical-device battery performance or release readiness.
+
+The approved AOD uses a true-black background, a small centered gray time readout, two very short low-intensity one-pixel Orbit accent arcs (gold and cyan), no normal-mode metrics or full progress rings, and a minute-dependent 5×5 positional offset for burn-in mitigation. The implementation switches presentation on watch-face sleep/wake lifecycle events. **The existing Monkey C source is the authoritative implementation baseline; this document records approval and does not authorize modifying it.**
+
+Future work on live data, active-mode layout, customization, and performance must not change the approved AOD design incidentally. Any proposed AOD visual or behavioral change requires explicit user authorization and a corresponding specification update.
