@@ -149,19 +149,20 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.drawText(cx, (149 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Give the steps value, its label, and bottom metrics separate rows.
+        // Compact, distinct rows: allow five-digit steps and generous label gaps.
         dc.setColor(stepAccent, Graphics.COLOR_TRANSPARENT);
         var stepText = "--";
         if (steps != null && steps >= 0) {
             stepText = formatSteps(steps);
         }
-        dc.drawText(cx, (235 * h / 416), Graphics.FONT_MEDIUM,
+        dc.drawText(cx, (224 * h / 416), Graphics.FONT_MEDIUM,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (269 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText(cx, (264 * h / 416), Graphics.FONT_XTINY,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Wide two-column spacing keeps the bottom metrics off the ring edges.
+        // Bottom values sit higher and nearer the center, inside the inner ring.
+        // Both labels share the same x as their value (including 100% BAT).
         var heartText = "--";
         if (heart != null) {
             heartText = heart.toString();
@@ -172,14 +173,14 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         }
 
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((132 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((155 * w / 416), (290 * h / 416), Graphics.FONT_XTINY,
             "HR", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((284 * w / 416), (304 * h / 416), Graphics.FONT_XTINY,
+        dc.drawText((261 * w / 416), (290 * h / 416), Graphics.FONT_XTINY,
             "BAT", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((145 * w / 416), (325 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText((155 * w / 416), (310 * h / 416), Graphics.FONT_SMALL,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((270 * w / 416), (320 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText((261 * w / 416), (310 * h / 416), Graphics.FONT_SMALL,
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
