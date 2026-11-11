@@ -154,9 +154,9 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (105 * h / 416), Graphics.FONT_SMALL,
             dateText, Graphics.TEXT_JUSTIFY_CENTER);
-        // Custom engraved serif numerals are the signature visual element.
-        // Native vector strokes avoid font-file compatibility and bitmap overhead.
-        drawLuxuryTime(dc, cx, (166 * h / 416), timeText);
+        // Stable Garmin-native numerals; time is the highest priority.
+        dc.drawText(cx, (147 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
+            timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
         // Fine horizontal separator; restrained decoration, not a metric ring.
         var dividerY = (252 * h / 416);
@@ -203,83 +203,6 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setPenWidth(1);
         dc.drawLine(cx, metricY - 5, cx, metricY + 27);
 
-    }
-
-    // Custom compact Roman-inspired clock, 4 digits plus a colon.
-    // Every glyph occupies 34x57 pixels, with fixed-width spacing.
-    function drawLuxuryTime(dc, cx, top, timeText) {
-        var left = cx - 94;
-        dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        for (var i = 0; i < 5; i++) {
-            var ch = timeText.substring(i, i + 1);
-            if (ch == ":") {
-                dc.fillCircle(left + 17, top + 18, 2);
-                dc.fillCircle(left + 17, top + 41, 2);
-                left += 18;
-            } else {
-                drawLuxuryDigit(dc, left, top, ch);
-                left += 43;
-            }
-        }
-    }
-
-    function luxuryLine(dc, x1, y1, x2, y2) {
-        dc.drawLine(x1, y1, x2, y2);
-    }
-
-    // Strokes use true curves for rounded digits, with hairline serifs.
-    function drawLuxuryDigit(dc, x, y, ch) {
-        dc.setPenWidth(2);
-        if (ch == "0") {
-            dc.drawEllipse(x + 5, y + 1, 26, 55);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 8, y + 49, x + 27, y + 8);
-        } else if (ch == "1") {
-            luxuryLine(dc, x + 7, y + 11, x + 19, y + 2);
-            luxuryLine(dc, x + 19, y + 2, x + 19, y + 55);
-            luxuryLine(dc, x + 7, y + 55, x + 31, y + 55);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 14, y + 3, x + 24, y + 3);
-        } else if (ch == "2") {
-            dc.drawArc(x + 18, y + 15, 14, Graphics.ARC_CLOCKWISE, 0, 180);
-            luxuryLine(dc, x + 32, y + 15, x + 5, y + 55);
-            luxuryLine(dc, x + 5, y + 55, x + 32, y + 55);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 3, y + 47, x + 3, y + 55);
-        } else if (ch == "3") {
-            dc.drawArc(x + 15, y + 15, 13, Graphics.ARC_CLOCKWISE, 270, 90);
-            dc.drawArc(x + 15, y + 41, 13, Graphics.ARC_CLOCKWISE, 270, 90);
-            luxuryLine(dc, x + 15, y + 28, x + 26, y + 28);
-        } else if (ch == "4") {
-            luxuryLine(dc, x + 26, y + 2, x + 26, y + 55);
-            luxuryLine(dc, x + 5, y + 35, x + 33, y + 35);
-            luxuryLine(dc, x + 5, y + 35, x + 24, y + 2);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 19, y + 55, x + 32, y + 55);
-        } else if (ch == "5") {
-            luxuryLine(dc, x + 30, y + 3, x + 8, y + 3);
-            luxuryLine(dc, x + 8, y + 3, x + 7, y + 27);
-            luxuryLine(dc, x + 7, y + 27, x + 24, y + 27);
-            dc.drawArc(x + 17, y + 41, 14, Graphics.ARC_CLOCKWISE, 270, 90);
-        } else if (ch == "6") {
-            dc.drawEllipse(x + 5, y + 27, 27, 29);
-            luxuryLine(dc, x + 6, y + 38, x + 23, y + 2);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 20, y + 2, x + 29, y + 2);
-        } else if (ch == "7") {
-            luxuryLine(dc, x + 4, y + 3, x + 32, y + 3);
-            luxuryLine(dc, x + 32, y + 3, x + 12, y + 55);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 4, y + 3, x + 4, y + 12);
-        } else if (ch == "8") {
-            dc.drawEllipse(x + 8, y + 2, 21, 26);
-            dc.drawEllipse(x + 4, y + 27, 29, 29);
-        } else if (ch == "9") {
-            dc.drawEllipse(x + 5, y + 2, 27, 29);
-            luxuryLine(dc, x + 31, y + 18, x + 12, y + 55);
-            dc.setPenWidth(1);
-            luxuryLine(dc, x + 7, y + 55, x + 17, y + 55);
-        }
     }
 
     // Small, gray clock and two restrained Orbit markers on true black.
