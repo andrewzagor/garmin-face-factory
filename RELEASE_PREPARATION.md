@@ -1,3 +1,5 @@
+> **Release decision (2026-11-11): Apex One Venu 2 v1 will be 100% FREE.** Do not enroll or pay $100/year for Garmin Merchant Account. Do not add external payment, paywall, trial or donation prompt in v1. Retain all currently implemented features and themes. Consider monetization only after gathering install/review data. Supersedes earlier paid-plan references below.
+
 # Apex One — Connect IQ Store release preparation
 
 **Status:** Release candidate undergoing Venu 2 physical testing. **Do not publish until gates pass.**
