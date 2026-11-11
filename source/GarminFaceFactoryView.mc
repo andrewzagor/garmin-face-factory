@@ -149,17 +149,21 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.drawText(cx, (149 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Compact lower typography: keep 40,000 and both metric columns inside
-        // the inner ring, with distinct steps, label, and metric rows.
+        // Use actual font heights to keep lower rows separate on real Venu 2.
+        // Keep the established centered steps and two-column metric layout.
+        var stepsY = (220 * h / 416);
+        var stepsLabelY = stepsY + dc.getFontHeight(Graphics.FONT_SMALL) + (5 * h / 416);
+        var metricLabelY = stepsLabelY + dc.getFontHeight(Graphics.FONT_XTINY) + (9 * h / 416);
+        var metricValueY = metricLabelY + dc.getFontHeight(Graphics.FONT_XTINY) + (5 * h / 416);
         dc.setColor(stepAccent, Graphics.COLOR_TRANSPARENT);
         var stepText = "--";
         if (steps != null && steps >= 0) {
             stepText = formatSteps(steps);
         }
-        dc.drawText(cx, (224 * h / 416), Graphics.FONT_SMALL,
+        dc.drawText(cx, stepsY, Graphics.FONT_SMALL,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (257 * h / 416), Graphics.FONT_TINY,
+        dc.drawText(cx, stepsLabelY, Graphics.FONT_XTINY,
             "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
 
         // Bottom values sit higher and nearer the center, inside the inner ring.
@@ -174,14 +178,14 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         }
 
         dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), (283 * h / 416), Graphics.FONT_TINY,
+        dc.drawText((155 * w / 416), metricLabelY, Graphics.FONT_XTINY,
             "HR", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), (283 * h / 416), Graphics.FONT_TINY,
+        dc.drawText((261 * w / 416), metricLabelY, Graphics.FONT_XTINY,
             "BAT", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), (304 * h / 416), Graphics.FONT_TINY,
+        dc.drawText((155 * w / 416), metricValueY, Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), (304 * h / 416), Graphics.FONT_TINY,
+        dc.drawText((261 * w / 416), metricValueY, Graphics.FONT_TINY,
             batteryText, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
