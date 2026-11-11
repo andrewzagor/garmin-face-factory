@@ -39,7 +39,12 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         _background = WatchUi.loadResource(Rez.Drawables.PrecisionBackground);
         _heartIcon = WatchUi.loadResource(Rez.Drawables.HeartIcon);
         _stepsIcon = WatchUi.loadResource(Rez.Drawables.StepsIcon);
-        _luxuryFont = WatchUi.loadResource(Rez.Fonts.PrecisionTime);
+        try {
+            _luxuryFont = WatchUi.loadResource(Rez.Fonts.PrecisionTime);
+        } catch (ex) {
+            // If a custom font resource is unavailable, native time survives.
+            _luxuryFont = null;
+        }
     }
 
     function onShow() {
