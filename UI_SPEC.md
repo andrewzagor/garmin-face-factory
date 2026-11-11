@@ -261,3 +261,15 @@ The approved implementation in `source/GarminFaceFactoryView.mc` is characterize
 ### Implementation correction — 2026-11-11
 
 The first SVG-based clock rendered as dots in the actual Venu 2 simulator despite a successful CI build. The SVG clock and SVG pictograms were therefore retired and replaced with a single BMFont atlas and two transparent PNG icons. A native-font fallback is retained and the font-resource load is guarded. This change fixes the root compatibility risk rather than hiding the affected layer. CI validates compilation only; the new BMFont appearance must still be observed in the real Venu 2 simulator before real-watch deployment. AOD remains frozen.
+
+
+## 18. Approved Precision Luxury v2 active-mode extension — 2026-11-11
+
+The user approved a **single consolidated v2**: wider functional Orbit rings, native Garmin weather, and a small notification badge, while preserving premium minimalism and the frozen AOD (§16).
+
+- **Rings:** outer steps radius 190 px, stroke 9 px; inner battery radius 172 px, stroke 7 px. Both stay inside the 208px physical screen radius with a visible separation. This supersedes v1's 169/153px geometry and its 178px *decorative* content-radius constraint for rings only. All text and metrics remain inside their safe zone.
+- **Bottom row:** heart rate left, current outdoor temperature center, steps right; small icons instead of field names. Battery remains on the cyan ring only, without duplicate percentage.
+- **Weather:** `Toybox.Weather.getCurrentConditions()`; temperature supplied in Celsius. Reject null conditions, null observation time, readings older than 3 hours, and implausible temperatures; fallback `--` when unavailable. No extra permissions or external API keys.
+- **Notifications:** `System.getDeviceSettings().notificationCount`, meaning Garmin *active* device notifications, not a guaranteed count of unread messages on the phone. No badge at zero; compact numeric badge 1–9, then `9+`.
+- **No change to AOD.** Weather, notifications, and extra rings are active-only. Preserve existing icon resources, serif clock, and native-font fallback.
+- **Acceptance:** Garmin CI compile plus one simulator screenshot testing clock, bottom row, ring clearance; on-device weather may require Garmin Connect weather sync, so no synthetic placeholder temperatures.

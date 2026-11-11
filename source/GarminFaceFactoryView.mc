@@ -6,6 +6,7 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
+import Toybox.Weather;
 
 // Apex One / Orbit: live Garmin metrics with the accepted Venu 2 layout.
 class GarminFaceFactoryView extends WatchUi.WatchFace {
@@ -127,21 +128,53 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             }
         }
 
-        // The outer ring is steps / goal; the inner ring is battery / 100.
-        // No arbitrary or decorative percentages.
+        // Wider concentric rings frame the screen, without touching its edge:
+        // outer = steps / goal; inner = remaining battery / 100.
         var scale = w / 416.0;
-        var outerRadius = (169 * scale).toNumber();
-        var innerRadius = (153 * scale).toNumber();
-        drawTrack(dc, cx, cy, outerRadius, 2);
+        var outerRadius = (190 * scale).toNumber();
+        var innerRadius = (172 * scale).toNumber();
+        drawTrack(dc, cx, cy, outerRadius, 3);
         drawTrack(dc, cx, cy, innerRadius, 2);
 
         if (steps != null && steps >= 0 && stepGoal != null && stepGoal > 0) {
-            drawProgress(dc, cx, cy, outerRadius, 7,
+            drawProgress(dc, cx, cy, outerRadius, 9,
                 steps.toFloat() / stepGoal.toFloat(), stepAccent);
         }
         if (battery != null) {
-            drawProgress(dc, cx, cy, innerRadius, 6,
+            drawProgress(dc, cx, cy, innerRadius, 7,
                 battery.toFloat() / 100.0, batteryAccent);
+        }
+
+        // Built-in Garmin weather cache. If missing/stale, use a
+        // truthful placeholder; never show invented or old temperatures.
+        var temperature = null;
+        var weatherCondition = null;
+        try {
+            var conditions = Weather.getCurrentConditions();
+            if (conditions != null && conditions.temperature != null &&
+                conditions.observationTime != null) {
+                var age = Time.now().subtract(conditions.observationTime).value();
+                if (age >= 0 && age <= 10800 &&
+                    conditions.temperature >= -70 && conditions.temperature <= 60) {
+                    temperature = conditions.temperature.toNumber();
+                    weatherCondition = conditions.condition;
+                }
+            }
+        } catch (weatherError) {
+            temperature = null;
+        }
+
+        // Garmin reports active notifications on the device; show a badge
+        // only when at least one is present (zero stays invisible).
+        var notificationCount = 0;
+        try {
+            var deviceSettings = System.getDeviceSettings();
+            if (deviceSettings != null && deviceSettings.notificationCount != null &&
+                deviceSettings.notificationCount > 0) {
+                notificationCount = deviceSettings.notificationCount;
+            }
+        } catch (notificationError) {
+            notificationCount = 0;
         }
 
         var today = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
@@ -169,6 +202,9 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (105 * h / 416), Graphics.FONT_SMALL,
             dateText, Graphics.TEXT_JUSTIFY_CENTER);
+        if (notificationCount > 0) {
+            drawNotificationBadge(dc, notificationCount);
+        }
         // Display high-contrast luxury serif glyphs, with reliable native
         // numerals as an immediate fallback if a graphic resource fails.
         drawPrecisionTime(dc, cx, (155 * h / 416), timeText);
@@ -191,29 +227,109 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             stepText = formatSteps(steps);
         }
 
-        // Deliberately spaced two-column metrics, with no small labels.
-        var metricY = (287 * h / 416);
+        // Precision Luxury v2: three compact values with deliberate spacing.
+        // Every reading remains inside the inner ring for up to 99,999 steps.
+        var metricY = (286 * h / 416);
         if (_heartIcon != null) {
-            dc.drawBitmap((108 * w / 416), metricY - 3, _heartIcon);
+            dc.drawBitmap((95 * w / 416), metricY - 3, _heartIcon);
         }
         if (_stepsIcon != null) {
-            dc.drawBitmap((224 * w / 416), metricY - 4, _stepsIcon);
+            dc.drawBitmap((254 * w / 416), metricY - 4, _stepsIcon);
         }
 
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((174 * w / 416), metricY - 2, Graphics.FONT_TINY,
+        dc.drawText((153 * w / 416), metricY - 2, Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        // Fit 99,999 steps without hitting the icon or circular edge.
+
+        drawWeatherMetric(dc, cx, metricY, temperature, weatherCondition);
+
         var stepFont = Graphics.FONT_TINY;
         if (steps != null && steps >= 10000) {
             stepFont = Graphics.FONT_XTINY;
         }
-        dc.drawText((299 * w / 416), metricY - 2, stepFont,
+        dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText((312 * w / 416), metricY - 2, stepFont,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
+
+        // Do not draw separators between tight columns: the three
+        // icon/value groups provide their own visual rhythm.
+
+    }
+
+    // Small notification marker: no badge at zero; 9+ is the visual cap.
+    // notificationCount means active device notifications (Garmin API).
+    function drawNotificationBadge(dc, count) {
+        var x = 293;
+        var y = 85;
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
-        dc.drawLine(cx, metricY - 5, cx, metricY + 25);
+        // Bell silhouette and clapper, all native vector primitives.
+        dc.drawLine(x - 5, y + 4, x - 5, y - 3);
+        dc.drawLine(x - 5, y - 3, x - 3, y - 6);
+        dc.drawLine(x - 3, y - 6, x + 3, y - 6);
+        dc.drawLine(x + 3, y - 6, x + 5, y - 3);
+        dc.drawLine(x + 5, y - 3, x + 5, y + 4);
+        dc.drawLine(x - 8, y + 5, x + 8, y + 5);
+        dc.fillCircle(x, y + 8, 2);
+        dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+        var label = count > 9 ? "9+" : count.toString();
+        dc.drawText(314, 76, Graphics.FONT_XTINY, label,
+            Graphics.TEXT_JUSTIFY_CENTER);
+    }
 
+    // Weather is sourced from the native Garmin weather cache (Celsius).
+    // An unavailable reading is shown as --, never as an assumed temperature.
+    function drawWeatherMetric(dc, cx, y, temperature, condition) {
+        var iconX = cx - 26;
+        var iconY = y + 10;
+        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(2);
+        if (temperature == null) {
+            // A subdued sun outline is a field glyph, not a condition claim.
+            dc.drawCircle(iconX, iconY, 7);
+        } else if (condition == Weather.CONDITION_CLEAR ||
+                   condition == Weather.CONDITION_MOSTLY_CLEAR ||
+                   condition == Weather.CONDITION_PARTLY_CLEAR ||
+                   condition == Weather.CONDITION_FAIR) {
+            dc.drawCircle(iconX, iconY, 5);
+            dc.drawLine(iconX - 9, iconY, iconX - 7, iconY);
+            dc.drawLine(iconX + 7, iconY, iconX + 9, iconY);
+            dc.drawLine(iconX, iconY - 9, iconX, iconY - 7);
+            dc.drawLine(iconX, iconY + 7, iconX, iconY + 9);
+        } else {
+            // Cloud symbol for other conditions: rain and snow get
+            // small distinctive falling marks.
+            dc.drawArc(iconX - 4, iconY, 5, Graphics.ARC_CLOCKWISE, 30, 170);
+            dc.drawArc(iconX + 4, iconY - 1, 6, Graphics.ARC_CLOCKWISE, 15, 180);
+            dc.drawLine(iconX - 11, iconY + 5, iconX + 11, iconY + 5);
+            if (condition == Weather.CONDITION_RAIN ||
+                condition == Weather.CONDITION_LIGHT_RAIN ||
+                condition == Weather.CONDITION_HEAVY_RAIN ||
+                condition == Weather.CONDITION_SHOWERS ||
+                condition == Weather.CONDITION_DRIZZLE) {
+                dc.drawLine(iconX - 3, iconY + 8, iconX - 5, iconY + 12);
+                dc.drawLine(iconX + 5, iconY + 8, iconX + 3, iconY + 12);
+            } else if (condition == Weather.CONDITION_SNOW ||
+                       condition == Weather.CONDITION_LIGHT_SNOW ||
+                       condition == Weather.CONDITION_HEAVY_SNOW) {
+                dc.fillCircle(iconX - 4, iconY + 10, 1);
+                dc.fillCircle(iconX + 5, iconY + 10, 1);
+            }
+        }
+
+        dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+        if (temperature != null) {
+            var tempText = temperature.toString();
+            dc.drawText(cx + 12, y - 2, Graphics.FONT_TINY,
+                tempText, Graphics.TEXT_JUSTIFY_CENTER);
+            // Native circle instead of a font-dependent degree glyph.
+            dc.setPenWidth(1);
+            var degreeX = cx + (tempText.length() >= 3 ? 35 : 28);
+            dc.drawCircle(degreeX, y + 3, 2);
+        } else {
+            dc.drawText(cx + 15, y - 2, Graphics.FONT_TINY,
+                "--", Graphics.TEXT_JUSTIFY_CENTER);
+        }
     }
 
     // Font resource is a verified raster BMFont atlas instead of SVG paths.
