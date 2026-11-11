@@ -175,27 +175,36 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             stepText = formatSteps(steps);
         }
 
-        // Draw tiny vector pictograms instead of language-dependent labels.
-        var metricY = (283 * h / 416);
+        // Compact vector heart and footsteps, drawn without font glyph dependencies.
+        // Reserve a full right-hand number field for five-digit step counts.
+        var metricY = (285 * h / 416);
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(2);
-        // ECG pulse line: recognizable and supported by native graphics.
-        dc.drawLine((111 * w / 416), metricY + 9, (119 * w / 416), metricY + 9);
-        dc.drawLine((119 * w / 416), metricY + 9, (123 * w / 416), metricY + 2);
-        dc.drawLine((123 * w / 416), metricY + 2, (128 * w / 416), metricY + 16);
-        dc.drawLine((128 * w / 416), metricY + 16, (133 * w / 416), metricY + 9);
-        dc.drawLine((133 * w / 416), metricY + 9, (141 * w / 416), metricY + 9);
-        // Minimal footsteps, drawn as small offset ellipses.
-        dc.fillEllipse((222 * w / 416), metricY + 2, 8, 13);
-        dc.fillEllipse((235 * w / 416), metricY + 10, 8, 13);
+        // Heart outline: two lobes and a tapered point.
+        dc.drawArc(121, metricY + 5, 8, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180);
+        dc.drawArc(137, metricY + 5, 8, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180);
+        dc.drawLine(113, metricY + 5, 129, metricY + 23);
+        dc.drawLine(145, metricY + 5, 129, metricY + 23);
+        // Heartbeat mark inside the heart.
+        dc.drawLine(120, metricY + 10, 125, metricY + 10);
+        dc.drawLine(125, metricY + 10, 128, metricY + 6);
+        dc.drawLine(128, metricY + 6, 131, metricY + 14);
+        dc.drawLine(131, metricY + 14, 134, metricY + 10);
+        dc.drawLine(134, metricY + 10, 139, metricY + 10);
+
+        // Footprints with heel, sole and distinct toes.
+        dc.fillEllipse(218, metricY + 4, 7, 12);
+        dc.fillEllipse(229, metricY + 12, 7, 12);
+        dc.fillCircle(223, metricY + 1, 2);
+        dc.fillCircle(234, metricY + 9, 2);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((168 * w / 416), metricY - 2, Graphics.FONT_TINY,
+        dc.drawText(173, metricY - 1, Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((283 * w / 416), metricY - 2, Graphics.FONT_TINY,
+        dc.drawText(292, metricY - 1, Graphics.FONT_TINY,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
-        dc.drawLine(cx, metricY - 3, cx, metricY + 26);
+        dc.drawLine(cx, metricY - 4, cx, metricY + 27);
 
     }
 
