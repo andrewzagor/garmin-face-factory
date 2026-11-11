@@ -186,3 +186,12 @@ Apex One is ready for commercial release consideration when:
 The approved AOD uses a true-black background, a small centered gray time readout, two very short low-intensity one-pixel Orbit accent arcs (gold and cyan), no normal-mode metrics or full progress rings, and a minute-dependent 5×5 positional offset for burn-in mitigation. The implementation switches presentation on watch-face sleep/wake lifecycle events. **The existing Monkey C source is the authoritative implementation baseline; this document records approval and does not authorize modifying it.**
 
 Future work on live data, active-mode layout, customization, and performance must not change the approved AOD design incidentally. Any proposed AOD visual or behavioral change requires explicit user authorization and a corresponding specification update.
+
+
+## Precision Luxury active-mode design decision — 2026-11-11
+
+The user selected **Precision Luxury** over Modern Futuristic and approved a specific stone-textured, emerald-graphite reference. This updates the original Orbit/Precision active-mode visual direction while preserving the product's data meaning, high-readability goal, and existing frozen AOD. The commercial positioning remains $4.99 through exceptional visual execution and daily dependability rather than added features.
+
+Active mode: subtle emerald mineral texture, clear serif time numerals with supported graphic resources, restrained golden geometric details, date above the clock, icon-led heart rate and steps in one balanced bottom row. Outer ring = step-goal progress; inner ring = battery percentage. The explicit battery number and English field labels are intentionally omitted at the user's direction. Functional data and all three existing accent palettes remain.
+
+**Status:** Working implementation candidate, compiled for Garmin Venu 2; final physical-device and store validation are not yet claimed. See UI_SPEC.md §17 for layout, fallback, and acceptance controls. AOD remains frozen as approved.

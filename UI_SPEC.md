@@ -237,3 +237,23 @@ The approved implementation in `source/GarminFaceFactoryView.mc` is characterize
 - Low-power entry/exit through `onEnterSleep` and `onExitSleep`, with `WatchUi.requestUpdate()`; the platform controls low-power update cadence.
 
 **Change control:** Preserve this approved AOD exactly in future implementation tasks, even if normal-mode design, metrics, or settings change. Only an explicit AOD change request permits revising it. Visual approval does not imply physical-device burn-in, battery, or release validation. This documentation update does not authorize source-code changes.
+
+
+## 17. Superseding active-mode direction — Precision Luxury (approved 2026-11-11)
+
+**Scope:** This section supersedes older active-screen-only decisions that require a flat black background, prohibit small decorative geometry, or require numerical battery percentage and English field labels. It does **not** supersede any technical requirements for truthful progress rings, safe margins, sensor handling, energy efficiency, or the frozen AOD in §16.
+
+**Approved visual reference:** Deep emerald/graphite stone with subtle natural mineral veining, elegant high-contrast serif time numerals, understated champagne-gold geometric signature, slim dividers, and tiny heart/footstep indicators.
+
+**Active screen composition at 416×416:**
+
+- Thin signature motif around y=80; date centered around y=105.
+- Large four-digit 24-hour time dominates the screen, using *separate resource-rendered serif numeral bitmaps* and a colon with fixed consistent dimensions. A known-good Garmin native time font remains as a fallback if bitmap rendering fails.
+- Horizontal separator near y=252. Heart rate with icon on the left and step count with footprints on the right, inside the inner progress ring. No literal HR/STEPS/BAT field labels.
+- Outer gold ring = live steps divided by the actual daily goal (capped at 100%). Inner cyan ring = validated battery divided by 100. The battery number is intentionally omitted to reduce clutter; the ring remains functional.
+- Normal mode uses a still, dark, low-brightness emerald mineral bitmap. It must not be drawn in low-power mode.
+- Orbit Gold, Titanium, and Electric continue to control functional ring colors; no additional metrics or animation in this revision.
+
+**Reliability principles:** Do not use untested runtime vector primitives for the critical time display. Do not load static graphical resources each frame; load once per layout where possible, and cache the current four time digits plus colon until time changes. Always provide readable clock fallback. No visual polish may make the time disappear.
+
+**Validation state:** Garmin CI compiles the new resources and source on the `product/apex-one-v1` branch. A separate pixel-level desktop composition preview was reviewed at 09:46, 10:15, and 23:59, with 0 to 99,999 steps, variable battery levels, and unavailable heart rate. **This preview is not a Venu 2 Simulator execution.** Full device simulator verification, performance measurements, and subsequent physical Venu 2 testing remain acceptance gates. The AOD in §16 stays unchanged.
