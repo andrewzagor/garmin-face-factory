@@ -31,7 +31,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     }
 
     function onLayout(dc) {
-        // Native drawing only; no bitmap assets or extra layout resources.
+        // Precision Luxury background is a compact indexed-color resource.
     }
 
     function onShow() {
@@ -59,6 +59,9 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             drawAlwaysOn(dc, cx, cy, timeText, clock.min);
             return;
         }
+
+        // Textured emerald graphite is active-mode only; frozen AOD stays black.
+        dc.drawBitmap(0, 0, WatchUi.loadResource(Rez.Drawables.PrecisionBackground));
 
         // Only the normal display uses the selected Connect IQ app theme.
         // Missing or invalid settings fall back to Orbit Gold.
@@ -140,53 +143,60 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         }
         var dateText = weekday + " " + today.day.format("%02d") + " " + month;
 
-        // Text anchors are deliberately central and clear of both rings.
-        dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (112 * h / 416), Graphics.FONT_SMALL,
-            dateText, Graphics.TEXT_JUSTIFY_CENTER);
+        // Precision Luxury: spacious clock and a single icon-led metric row.
+        // Keep the numerals inside the inner progress ring.
+        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(2);
+        dc.drawLine(cx - 8, (88 * h / 416), cx, (79 * h / 416));
+        dc.drawLine(cx, (79 * h / 416), cx + 8, (88 * h / 416));
+        dc.drawLine(cx - 3, (88 * h / 416), cx + 3, (82 * h / 416));
 
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (149 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
+        dc.drawText(cx, (105 * h / 416), Graphics.FONT_SMALL,
+            dateText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, (147 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
             timeText, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Use actual font heights to keep lower rows separate on real Venu 2.
-        // Keep the established centered steps and two-column metric layout.
-        var stepsY = (220 * h / 416);
-        var stepsLabelY = stepsY + dc.getFontHeight(Graphics.FONT_SMALL) + (5 * h / 416);
-        var metricLabelY = stepsLabelY + dc.getFontHeight(Graphics.FONT_XTINY) + (9 * h / 416);
-        var metricValueY = metricLabelY + dc.getFontHeight(Graphics.FONT_XTINY) + (5 * h / 416);
-        dc.setColor(stepAccent, Graphics.COLOR_TRANSPARENT);
-        var stepText = "--";
-        if (steps != null && steps >= 0) {
-            stepText = formatSteps(steps);
-        }
-        dc.drawText(cx, stepsY, Graphics.FONT_SMALL,
-            stepText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, stepsLabelY, Graphics.FONT_XTINY,
-            "STEPS", Graphics.TEXT_JUSTIFY_CENTER);
+        // Fine horizontal separator; restrained decoration, not a metric ring.
+        var dividerY = (252 * h / 416);
+        dc.setPenWidth(1);
+        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine((99 * w / 416), dividerY, (190 * w / 416), dividerY);
+        dc.drawLine((226 * w / 416), dividerY, (317 * w / 416), dividerY);
+        dc.drawLine(cx - 6, dividerY, cx, dividerY - 7);
+        dc.drawLine(cx, dividerY - 7, cx + 6, dividerY);
 
-        // Bottom values sit higher and nearer the center, inside the inner ring.
-        // Both labels share the same x as their value (including 100% BAT).
         var heartText = "--";
         if (heart != null) {
             heartText = heart.toString();
         }
-        var batteryText = "--";
-        if (battery != null) {
-            batteryText = battery.toString() + "%";
+        var stepText = "--";
+        if (steps != null && steps >= 0) {
+            stepText = formatSteps(steps);
         }
 
-        dc.setColor(MUTED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), metricLabelY, Graphics.FONT_XTINY,
-            "HR", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), metricLabelY, Graphics.FONT_XTINY,
-            "BAT", Graphics.TEXT_JUSTIFY_CENTER);
+        // Draw tiny vector pictograms instead of language-dependent labels.
+        var metricY = (283 * h / 416);
+        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(2);
+        // ECG pulse line: recognizable and supported by native graphics.
+        dc.drawLine((111 * w / 416), metricY + 9, (119 * w / 416), metricY + 9);
+        dc.drawLine((119 * w / 416), metricY + 9, (123 * w / 416), metricY + 2);
+        dc.drawLine((123 * w / 416), metricY + 2, (128 * w / 416), metricY + 16);
+        dc.drawLine((128 * w / 416), metricY + 16, (133 * w / 416), metricY + 9);
+        dc.drawLine((133 * w / 416), metricY + 9, (141 * w / 416), metricY + 9);
+        // Minimal footsteps, drawn as small offset ellipses.
+        dc.fillEllipse((222 * w / 416), metricY + 2, 8, 13);
+        dc.fillEllipse((235 * w / 416), metricY + 10, 8, 13);
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText((155 * w / 416), metricValueY, Graphics.FONT_TINY,
+        dc.drawText((168 * w / 416), metricY - 2, Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText((261 * w / 416), metricValueY, Graphics.FONT_TINY,
-            batteryText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText((283 * w / 416), metricY - 2, Graphics.FONT_TINY,
+            stepText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(1);
+        dc.drawLine(cx, metricY - 3, cx, metricY + 26);
+
     }
 
     // Small, gray clock and two restrained Orbit markers on true black.
