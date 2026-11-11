@@ -12,4 +12,6 @@
     <bitmap id="Luxury8" filename="luxury_8.svg" />
     <bitmap id="Luxury9" filename="luxury_9.svg" />
     <bitmap id="LuxuryColon" filename="luxury_colon.svg" />
+    <bitmap id="HeartIcon" filename="heart_icon.svg" />
+    <bitmap id="StepsIcon" filename="steps_icon.svg" />
 </drawables>

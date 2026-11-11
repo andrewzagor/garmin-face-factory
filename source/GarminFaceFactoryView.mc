@@ -25,13 +25,21 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     const AOD_CYAN = 0x1B4442;
 
     var _lowPower = false;
+    var _background = null;
+    var _heartIcon = null;
+    var _stepsIcon = null;
+    var _cachedTime = null;
+    var _cachedGlyphs = null;
 
     function initialize() {
         WatchFace.initialize();
     }
 
     function onLayout(dc) {
-        // Precision Luxury background is a compact indexed-color resource.
+        // Cache static resources once; loading every screen update costs power.
+        _background = WatchUi.loadResource(Rez.Drawables.PrecisionBackground);
+        _heartIcon = WatchUi.loadResource(Rez.Drawables.HeartIcon);
+        _stepsIcon = WatchUi.loadResource(Rez.Drawables.StepsIcon);
     }
 
     function onShow() {
@@ -60,8 +68,10 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             return;
         }
 
-        // Textured emerald graphite is active-mode only; frozen AOD stays black.
-        dc.drawBitmap(0, 0, WatchUi.loadResource(Rez.Drawables.PrecisionBackground));
+        // Active-only mineral dial. Never draw it behind the frozen AOD.
+        if (_background != null) {
+            dc.drawBitmap(0, 0, _background);
+        }
 
         // Only the normal display uses the selected Connect IQ app theme.
         // Missing or invalid settings fall back to Orbit Gold.
@@ -154,9 +164,9 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(cx, (105 * h / 416), Graphics.FONT_SMALL,
             dateText, Graphics.TEXT_JUSTIFY_CENTER);
-        // Stable Garmin-native numerals; time is the highest priority.
-        dc.drawText(cx, (147 * h / 416), Graphics.FONT_NUMBER_MEDIUM,
-            timeText, Graphics.TEXT_JUSTIFY_CENTER);
+        // Display high-contrast luxury serif glyphs, with reliable native
+        // numerals as an immediate fallback if a graphic resource fails.
+        drawPrecisionTime(dc, cx, (155 * h / 416), timeText);
 
         // Fine horizontal separator; restrained decoration, not a metric ring.
         var dividerY = (252 * h / 416);
@@ -176,33 +186,79 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
             stepText = formatSteps(steps);
         }
 
-        // Icon-led two-column metrics. Icons are intentionally separated
-        // from numbers and from the central gold hairline.
-        var metricY = (286 * h / 416);
-        dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
-        dc.setPenWidth(2);
-        // Small precision heart: two round lobes and a clear tapered tip.
-        dc.drawArc(119, metricY + 6, 7, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180);
-        dc.drawArc(133, metricY + 6, 7, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180);
-        dc.drawLine(112, metricY + 6, 126, metricY + 22);
-        dc.drawLine(140, metricY + 6, 126, metricY + 22);
-        // Footprints: each has a heel, offset sole, and distinct toe marks.
-        dc.fillEllipse(231, metricY + 7, 6, 12);
-        dc.fillCircle(237, metricY + 4, 2);
-        dc.fillCircle(240, metricY + 7, 1);
-        dc.fillEllipse(245, metricY + 15, 6, 12);
-        dc.fillCircle(251, metricY + 12, 2);
-        dc.fillCircle(254, metricY + 15, 1);
+        // Deliberately spaced two-column metrics, with no small labels.
+        var metricY = (287 * h / 416);
+        if (_heartIcon != null) {
+            dc.drawBitmap((108 * w / 416), metricY - 3, _heartIcon);
+        }
+        if (_stepsIcon != null) {
+            dc.drawBitmap((224 * w / 416), metricY - 4, _stepsIcon);
+        }
 
         dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(169, metricY - 1, Graphics.FONT_TINY,
+        dc.drawText((174 * w / 416), metricY - 2, Graphics.FONT_TINY,
             heartText, Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(293, metricY - 1, Graphics.FONT_TINY,
+        // Fit 99,999 steps without hitting the icon or circular edge.
+        var stepFont = Graphics.FONT_TINY;
+        if (steps != null && steps >= 10000) {
+            stepFont = Graphics.FONT_XTINY;
+        }
+        dc.drawText((299 * w / 416), metricY - 2, stepFont,
             stepText, Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(GOLD, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
-        dc.drawLine(cx, metricY - 5, cx, metricY + 27);
+        dc.drawLine(cx, metricY - 5, cx, metricY + 25);
 
+    }
+
+    // A lightweight set of individually rendered serif numeral bitmaps.
+    // Cache only the five glyphs currently visible, once per minute.
+    function loadPrecisionGlyph(ch) {
+        if (ch == "0") { return WatchUi.loadResource(Rez.Drawables.Luxury0); }
+        if (ch == "1") { return WatchUi.loadResource(Rez.Drawables.Luxury1); }
+        if (ch == "2") { return WatchUi.loadResource(Rez.Drawables.Luxury2); }
+        if (ch == "3") { return WatchUi.loadResource(Rez.Drawables.Luxury3); }
+        if (ch == "4") { return WatchUi.loadResource(Rez.Drawables.Luxury4); }
+        if (ch == "5") { return WatchUi.loadResource(Rez.Drawables.Luxury5); }
+        if (ch == "6") { return WatchUi.loadResource(Rez.Drawables.Luxury6); }
+        if (ch == "7") { return WatchUi.loadResource(Rez.Drawables.Luxury7); }
+        if (ch == "8") { return WatchUi.loadResource(Rez.Drawables.Luxury8); }
+        if (ch == "9") { return WatchUi.loadResource(Rez.Drawables.Luxury9); }
+        return WatchUi.loadResource(Rez.Drawables.LuxuryColon);
+    }
+
+    function drawPrecisionTime(dc, cx, top, timeText) {
+        var succeeded = false;
+        try {
+            if (_cachedGlyphs == null || _cachedTime != timeText) {
+                var nextGlyphs = [];
+                for (var i = 0; i < 5; i++) {
+                    nextGlyphs.add(loadPrecisionGlyph(timeText.substring(i, i + 1)));
+                }
+                _cachedGlyphs = nextGlyphs;
+                _cachedTime = timeText;
+            }
+            var x = cx - 124; // four 56px digits plus one 24px colon
+            for (var j = 0; j < 5; j++) {
+                dc.drawBitmap(x, top, _cachedGlyphs[j]);
+                if (j == 2) {
+                    x += 24;
+                } else {
+                    x += 56;
+                }
+            }
+            succeeded = true;
+        } catch (ex) {
+            // The clock is essential. A rendering issue must never hide it.
+            _cachedGlyphs = null;
+            _cachedTime = null;
+        }
+        if (!succeeded) {
+            dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(cx, (147 * dc.getHeight() / 416),
+                Graphics.FONT_NUMBER_MEDIUM,
+                timeText, Graphics.TEXT_JUSTIFY_CENTER);
+        }
     }
 
     // Small, gray clock and two restrained Orbit markers on true black.
