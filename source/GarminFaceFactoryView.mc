@@ -28,8 +28,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
     var _background = null;
     var _heartIcon = null;
     var _stepsIcon = null;
-    var _cachedTime = null;
-    var _cachedGlyphs = null;
+    var _luxuryFont = null;
 
     function initialize() {
         WatchFace.initialize();
@@ -40,6 +39,7 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         _background = WatchUi.loadResource(Rez.Drawables.PrecisionBackground);
         _heartIcon = WatchUi.loadResource(Rez.Drawables.HeartIcon);
         _stepsIcon = WatchUi.loadResource(Rez.Drawables.StepsIcon);
+        _luxuryFont = WatchUi.loadResource(Rez.Fonts.PrecisionTime);
     }
 
     function onShow() {
@@ -211,54 +211,23 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
 
     }
 
-    // A lightweight set of individually rendered serif numeral bitmaps.
-    // Cache only the five glyphs currently visible, once per minute.
-    function loadPrecisionGlyph(ch) {
-        if (ch == "0") { return WatchUi.loadResource(Rez.Drawables.Luxury0); }
-        if (ch == "1") { return WatchUi.loadResource(Rez.Drawables.Luxury1); }
-        if (ch == "2") { return WatchUi.loadResource(Rez.Drawables.Luxury2); }
-        if (ch == "3") { return WatchUi.loadResource(Rez.Drawables.Luxury3); }
-        if (ch == "4") { return WatchUi.loadResource(Rez.Drawables.Luxury4); }
-        if (ch == "5") { return WatchUi.loadResource(Rez.Drawables.Luxury5); }
-        if (ch == "6") { return WatchUi.loadResource(Rez.Drawables.Luxury6); }
-        if (ch == "7") { return WatchUi.loadResource(Rez.Drawables.Luxury7); }
-        if (ch == "8") { return WatchUi.loadResource(Rez.Drawables.Luxury8); }
-        if (ch == "9") { return WatchUi.loadResource(Rez.Drawables.Luxury9); }
-        return WatchUi.loadResource(Rez.Drawables.LuxuryColon);
-    }
-
+    // Font resource is a verified raster BMFont atlas instead of SVG paths.
+    // The reliable Garmin clock remains the fallback if anything fails.
     function drawPrecisionTime(dc, cx, top, timeText) {
-        var succeeded = false;
-        try {
-            if (_cachedGlyphs == null || _cachedTime != timeText) {
-                var nextGlyphs = [];
-                for (var i = 0; i < 5; i++) {
-                    nextGlyphs.add(loadPrecisionGlyph(timeText.substring(i, i + 1)));
-                }
-                _cachedGlyphs = nextGlyphs;
-                _cachedTime = timeText;
+        if (_luxuryFont != null) {
+            try {
+                dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(cx, top, _luxuryFont, timeText,
+                    Graphics.TEXT_JUSTIFY_CENTER);
+                return;
+            } catch (ex) {
+                // Keep time visible even when a custom font cannot render.
             }
-            var x = cx - 124; // four 56px digits plus one 24px colon
-            for (var j = 0; j < 5; j++) {
-                dc.drawBitmap(x, top, _cachedGlyphs[j]);
-                if (j == 2) {
-                    x += 24;
-                } else {
-                    x += 56;
-                }
-            }
-            succeeded = true;
-        } catch (ex) {
-            // The clock is essential. A rendering issue must never hide it.
-            _cachedGlyphs = null;
-            _cachedTime = null;
         }
-        if (!succeeded) {
-            dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, (147 * dc.getHeight() / 416),
-                Graphics.FONT_NUMBER_MEDIUM,
-                timeText, Graphics.TEXT_JUSTIFY_CENTER);
-        }
+        dc.setColor(WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, (147 * dc.getHeight() / 416),
+            Graphics.FONT_NUMBER_MEDIUM, timeText,
+            Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // Small, gray clock and two restrained Orbit markers on true black.
