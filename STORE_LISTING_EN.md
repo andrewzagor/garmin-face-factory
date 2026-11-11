@@ -1,3 +1,5 @@
+> **FREE RELEASE DECISION — 2026-11-11:** Apex One's first Venu 2 Store listing is completely free, all existing capabilities and themes included. Select **No** when the listing asks whether the app requests or requires payment. No Merchant Account, $100 annual fee, licensing gate, time-limited trial, external checkout or donation prompt. Earlier draft USD $4.99 references are obsolete for first release.
+
 # Apex One — Precision Luxury · Store listing copy (draft)
 
 **Listing status:** Pre-release draft. No submission, payment account creation, product renaming, or signing keys are included.
@@ -41,7 +43,7 @@ Weather requires available Garmin weather information and may be temporarily una
 - **Category:** Watch Face
 - **Language:** English
 - **Keywords:** premium, elegant, luxury, analog-inspired, digital, AMOLED, weather, steps, heart rate, daily, minimalist
-- **Price target:** around USD $4.99, final amount selected from Garmin Merchant price points
+- **Price:** Free (USD $0). No merchant setup required for v1.
 - **App ID:** preserve existing ID `045c53dc-42ec-4b6c-8ce5-7d1d1cd17c55` so updates are recognized as the same app
 
 ## Visual asset status
@@ -57,10 +59,10 @@ Weather requires available Garmin weather information and may be temporarily una
 3. On release commit change only the display-name string `resources/strings/strings.xml` from `GarminFaceFactory` to `Apex One — Precision Luxury` (or store-compliant shorter name). Do not rename the app ID, rewrite AOD, or change branch `main`.
 4. Compile again and confirm that the renamed app does not change any device visuals.
 5. From VS Code Command Palette run **Monkey C: Export Project**. Select Garmin Venu 2; use your existing secure developer signing key or create/back up a dedicated production key. Keep the private key outside the repository.
-6. Use the Garmin Connect IQ Developer Dashboard **Upload an App** and supply the resulting signed `.iq`. After binary validation, fill in the English listing and actual screenshots. Select monetization only with an approved merchant account and available price point.
+6. Use the Garmin Connect IQ Developer Dashboard **Upload an App** and supply the resulting signed `.iq`. After binary validation, fill in the English listing and actual screenshots. For this free release, declare that the application neither requires nor requests payment; do not set up Garmin Merchant.
 7. Complete review and approval before describing the app as published.
 
-## Merchant caveat
+## Future monetization — not part of the free release
 According to Garmin merchant terms, onboarding may involve a non-refundable annual program fee in addition to the stated 15% sales share and local tax/foreign-exchange adjustments. Verify exact merchant onboarding costs in your account **before** paying; do not guess an amount.
 
 ## Verified documentation
