@@ -395,7 +395,10 @@ class GarminFaceFactoryView extends WatchUi.WatchFace {
         dc.setPenWidth(stroke);
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);
         var sweep = (fraction * 360).toNumber();
-        dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, 90, 90 + sweep);
+        // Garmin's clockwise arc runs toward DECREASING angle values.
+        // A positive end angle paints the complementary (wrong) segment.
+        // For 100%, equal start/end angles explicitly draw a full circle.
+        dc.drawArc(cx, cy, radius, Graphics.ARC_CLOCKWISE, 90, 90 - sweep);
     }
 
     function drawTrack(dc, cx, cy, radius, stroke) {
