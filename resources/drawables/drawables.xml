@@ -1,4 +1,15 @@
 <drawables>
     <bitmap id="LauncherIcon" filename="launcher_icon.png" />
     <bitmap id="PrecisionBackground" filename="precision_background.png" />
+    <bitmap id="Luxury0" filename="luxury_0.svg" />
+    <bitmap id="Luxury1" filename="luxury_1.svg" />
+    <bitmap id="Luxury2" filename="luxury_2.svg" />
+    <bitmap id="Luxury3" filename="luxury_3.svg" />
+    <bitmap id="Luxury4" filename="luxury_4.svg" />
+    <bitmap id="Luxury5" filename="luxury_5.svg" />
+    <bitmap id="Luxury6" filename="luxury_6.svg" />
+    <bitmap id="Luxury7" filename="luxury_7.svg" />
+    <bitmap id="Luxury8" filename="luxury_8.svg" />
+    <bitmap id="Luxury9" filename="luxury_9.svg" />
+    <bitmap id="LuxuryColon" filename="luxury_colon.svg" />
 </drawables>
